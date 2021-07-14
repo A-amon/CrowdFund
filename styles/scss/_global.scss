@@ -1,0 +1,22 @@
+@import './color';
+@import './breakpoints';
+@import './reset';
+@import './typography';
+
+@import './navbar';
+
+@mixin pill-button {
+    border-radius:50px;
+    color:white;
+    background-color: $keppel;
+    padding:1rem 2rem;
+    font-weight:bold;
+    &:hover{
+        background-color:$genoa;
+    }
+}
+
+
+body{
+    background-color:$alabaster;
+}

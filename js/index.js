@@ -1,8 +1,6 @@
 var selectedReward = null
 var isBookmarked = false
 
-var selectedCard = null
-
 const rewards = [
     {
         id: 1,
@@ -27,32 +25,12 @@ const rewards = [
     }
 ]
 
-const mainStatus = {
-    backedAmount: 89914,
-    backersCount: 5007,
-    daysLeft: 56
-}
+const pledgeTemplate = document.getElementById("card--pledge")
+const rewardTemplate = document.getElementById("card--reward")
 
-window.onload = function () {
-    updateMainStatus()
-    listRewards()
-
-    document.addEventListener('scroll', handleScroll);
-
-    const backButton = document.getElementsByClassName("back__btn")[0]  // back project button
-    backButton.addEventListener("click", () => { showRewardsModal() })
-
-    const bookmarkButton = document.getElementsByClassName("bookmark__btn")[0]  // bookmark switch
-    bookmarkButton.addEventListener("click", () => { bookmarkProject(bookmarkButton) })
-
-    const navbarButton = document.getElementsByClassName("navbar__btn")[0]
-    navbarButton.addEventListener("click", () => { handleMenu(navbarButton) })
-
-    const modalRewardCard = document.getElementsByClassName("modal__stands")[0].children[0]
-    addClickEventToCard(modalRewardCard)
-}
-
-function handleScroll() {
+//  handle scroll event
+//  give navbar background color when scrolled
+function handleScroll () {
     const scroll_loc = window.scrollY
     const navbar = document.getElementsByClassName("navbar")[0]
 
@@ -62,24 +40,18 @@ function handleScroll() {
         navbar.classList.remove("filled")
 }
 
-function handleMenu(navbarButton) {
-    const isMenuOpen = navbarButton.getAttribute("data-open") == "true"
-    const menu = document.getElementsByClassName("navbar__links")[0]
-    const mainContent = document.getElementsByClassName("main")[0]
+//  toggle menu on mobile view
+//  show/ hide backdrop
+function handleMenu () {
+    const isMenuOpen = navbarButton.getAttribute("aria-expanded") == "true" //  get boolean isMenuOpen value
+    const mainContent = document.getElementsByClassName("main")[0]  //  backdrop element
 
-    if (isMenuOpen) {
-        menu.classList.remove("active")
-        navbarButton.setAttribute("data-open", "false")
-        mainContent.classList.remove("hide")
-    }
-    else {
-        menu.classList.add("active")
-        navbarButton.setAttribute("data-open", "true")
-        mainContent.classList.add("hide")
-    }
+    navbarButton.setAttribute("aria-expanded", !isMenuOpen)
+    mainContent.classList.toggle("hide")
 }
 
-function bookmarkProject(bookmarkButton) {
+//  set bookmarked status
+function bookmarkProject (bookmarkButton) {
     const bookmarkCheckbox = document.getElementById("bookmark__checkbox")
     const isChecked = bookmarkCheckbox.checked
 
@@ -89,48 +61,42 @@ function bookmarkProject(bookmarkButton) {
     bookmarkButton.innerHTML = `<span>Bookmark${isBookmarked ? 'ed' : ''}</span>`
 }
 
-function setCloseModalEvents(modal) {
-    const modalBackdrop = modal.querySelector(".modal__backdrop")
-    modalBackdrop.addEventListener("click", () => closeModal(modal))    // close on backdrop clicked
-    const modalCloseBtn = modal.querySelector(".close__btn")
-    modalCloseBtn.addEventListener("click", () => closeModal(modal))    // close on close button clicked
+//  handle completed process modal
+function handleCompleteModal () {
+    const completeModal = document.getElementsByClassName("complete__modal")[0]
+
+    handleModal(completeModal)
 }
 
-function showCompleteModal() {
-    const completeModal = document.getElementsByClassName("complete__modal")[0]
-    let modalClasslist = completeModal.classList
-    if (!modalClasslist.contains('active')) {
-        modalClasslist.add('active')
+//  show/close modal
+function handleModal (modal) {
+    modal.classList.toggle('active')
 
-        setCloseModalEvents(completeModal)
+    if (modal.classList.contains('active')) {
+        const modalBackdrop = modal.querySelector(".modal__backdrop")
+        modalBackdrop.addEventListener("click", () => handleModal(modal))    // close on backdrop clicked
+
+        const modalCloseBtn = modal.querySelector(".close__btn")
+        modalCloseBtn.addEventListener("click", () => handleModal(modal))    // close on close button clicked
     }
 }
 
-function showRewardsModal() {
+//  handle rewards modal
+function handleRewardsModal () {
     const rewardsModal = document.getElementsByClassName("rewards__modal")[0]
 
-    let modalClasslist = rewardsModal.classList
-    if (!modalClasslist.contains('active')) {
-        modalClasslist.add('active')
-
-        setCloseModalEvents(rewardsModal)
-    }
+    handleModal(rewardsModal)
 }
 
-function closeModal(modal) {
-    if (modal.classList.contains('active'))
-        modal.classList.remove('active')
-}
-
-function unselectPrevReward() {
-    if (selectedReward !== null) {
+//  unselect previously selected reward
+function unselectPrevReward () {
+    if (selectedReward !== null) {  //  cannot unselect if no alternative reward selected
         selectedCard.classList.remove('selected')
-        const selectedRadio = selectedCard.querySelector("[type='radio']")
-        selectedRadio.checked = false
     }
 }
 
-function selectReward(__selectedCard, isModal = true) {
+
+function selectReward (__selectedCard, isModal = true) {
     unselectPrevReward()
 
     const selectedId = parseInt(__selectedCard.getAttribute("data-id"))
@@ -152,25 +118,23 @@ function selectReward(__selectedCard, isModal = true) {
     selectedRadio.checked = true
 }
 
-function getCardInModal(selectedId) {
+function getCardInModal (selectedId) {
     const rewardsModal = document.getElementsByClassName("rewards__modal")[0]
     const rewardCard = rewardsModal.querySelector(`[data-id='${selectedId}']`)
 
     return rewardCard
 }
 
-function getRadioInModal(rewardCard) {
+function getRadioInModal (rewardCard) {
     const radio = rewardCard.querySelector("[type='radio']")
 
     return radio
 }
 
-function pledge(reward) {
+function pledge (reward) {
     const pledgeAmount = parseInt(document.getElementsByClassName("pledge__amount")[reward.id === null ? 0 : reward.id].value)
-    const pledgeErrorMessage = document.getElementsByClassName("pledge__error")[0]
 
     let errorMessage = null
-
 
     if (reward === null || pledgeAmount >= reward.min) {
         if (reward !== null) {
@@ -180,10 +144,9 @@ function pledge(reward) {
         }
         mainStatus.backersCount++
         mainStatus.backedAmount += pledgeAmount
-        updateMainStatus()
 
-        closeModal(document.getElementsByClassName("rewards__modal")[0])
-        showCompleteModal()
+        handleRewardsModal()
+        handleCompleteModal()
     }
     else if (pledgeAmount === 0) {
         errorMessage = "Pledge amount must not be empty"
@@ -192,10 +155,17 @@ function pledge(reward) {
         errorMessage = `Min pledge for this reward is ${reward.min}`
     }
 
-    pledgeErrorMessage.textContent = errorMessage
+    setPledgeErrorMessage(errorMessage)
 }
 
-function updateAmountShown(amount) {
+//  set pledge error message to be displayed
+function setPledgeErrorMessage (message) {
+    const pledgeErrorMessage = document.getElementsByClassName("pledge__error")[0]
+    pledgeErrorMessage.textContent = message
+}
+
+//  update amount left in selected reward card
+function updateAmountShown (amount) {
     const rewardCards = document.querySelectorAll(`[data-id='${selectedReward}']`)
     rewardCards.forEach(rewardCard => {
         const rewardAmount = rewardCard.querySelectorAll(".amount__left")
@@ -205,99 +175,64 @@ function updateAmountShown(amount) {
     })
 }
 
-function updateMainStatus() {
-    const mainStatusVals = document.getElementsByClassName("status__val")
-
-    mainStatusVals[0].textContent = `$${mainStatus.backedAmount.toLocaleString()}`
-    mainStatusVals[1].textContent = mainStatus.backersCount
-    mainStatusVals[2].textContent = mainStatus.daysLeft
-
-    const progressValue = document.getElementsByClassName("progress__value")[0]
-    let newProgressVal = Math.floor(mainStatus.backedAmount / 100000 * 100)
-    newProgressVal = newProgressVal > 100 ? 100 : newProgressVal
-    progressValue.setAttribute("data-current", newProgressVal)
-    progressValue.style.width = `${newProgressVal}%`
-}
-
-function listRewards() {
+//  loop through rewards
+//  add to main list and rewards modal
+function listRewards () {
     rewards.forEach(reward => {
         addToMain(reward)
         addToRewardsModal(reward)
     })
 }
 
-function addToMain(reward) {
+//   add reward to main list
+function addToMain (reward) {
     const mainStands = document.getElementsByClassName("main__stands")[0]
-    let rewardCard = document.createElement("li")
-    rewardCard.className = "card"
-    rewardCard.setAttribute("data-id", reward.id)
-    rewardCard.setAttribute("data-amount", reward.amount)
-    rewardCard.innerHTML = `<div class="card__header">
-                                <h3>${reward.name}</h3>
-                                <span>Pledge $${reward.min} or more</span>
-                            </div>
-                            <p>
-                                ${reward.description}
-                            </p>
-                            <div class="card__footer">
-                                <span class="amount__left">
-                                    <strong>${reward.amount}</strong>
-                                    <span>left</span>
-                                </span>
-                                <button class="reward__btn">
-                                    Select Reward
-                                </button>
-                            </div>`
+    let rewardCard = cloneTemplate(rewardTemplate, reward)
 
     const rewardButton = rewardCard.querySelector(".reward__btn")
     rewardButton.addEventListener("click", () => {
         selectReward(rewardCard, false)
-        showRewardsModal()
+        handleRewardsModal()
     })
 
     mainStands.appendChild(rewardCard)
 }
 
-function addToRewardsModal(reward) {
+//  add reward to rewards modal
+function addToRewardsModal (reward) {
     const modalStands = document.getElementsByClassName("modal__stands")[0]
-    let rewardCard = document.createElement("li")
-    rewardCard.className = "card"
-    rewardCard.setAttribute("data-id", reward.id)
-    rewardCard.setAttribute("data-amount", reward.amount)
-
-    rewardCard.innerHTML = `<div class="card__header">
-                                <input type="radio" class="reward__radio" aria-label="Select reward">
-                                <h3>${reward.name}</h3>
-                                <span>Pledge $${reward.min} or more</span>
-                                <span class="amount__left">
-                                    <strong>${reward.amount}</strong>
-                                    <span>left</span>
-                                </span>
-                            </div>
-                            <p>
-                                ${reward.description}
-                            </p>
-                            <div class="card__footer">
-                                <span class="amount__left">
-                                    <strong>${reward.amount}</strong>
-                                    <span>left</span>
-                                </span>
-                            </div>
-                            <div class="pledge">
-                                <div class="pledge__wrapper">
-                                    <input class="pledge__amount" type="number" placeholder="Enter your pledge" aria-label="Enter pledge amount'>
-                                    <span class="pledge__error"></span>
-                                </div>
-                                <span class="pledge__min">${reward.min}</span>
-                                <button class="pledge__submit">Continue</button>
-                            </div>`
+    let rewardCard = cloneTemplate(pledgeTemplate, reward)
 
     addClickEventToCard(rewardCard, reward)
 
     modalStands.appendChild(rewardCard)
 }
 
-function addClickEventToCard(card, reward = null) {
+//  replace named content with passed value
+//  return updated element
+function replaceValue (card, name, value) {
+    card.innerHTML = card.innerHTML.replaceAll(name, value)
+    return card
+}
+
+//  clone template
+//  replace content with reward values
+function cloneTemplate (template, { id, name, description, min, amount }) {
+    let cloned = template.content.firstElementChild.cloneNode(true)
+
+    cloned.setAttribute("data-id", id)
+    cloned.setAttribute("data-amount", amount)
+
+    cloned = replaceValue(cloned, "$name", name)
+    cloned = replaceValue(cloned, "$description", description)
+    cloned = replaceValue(cloned, "$min", min)
+    cloned = replaceValue(cloned, "$amount", amount)
+
+    return cloned
+}
+
+//  add click event handler to card
+function addClickEventToCard (card, reward = null) {
     card.addEventListener("click", (event) => {
         if (event.target.className === "pledge__submit")
             pledge(reward)
@@ -305,3 +240,21 @@ function addClickEventToCard(card, reward = null) {
             selectReward(card)
     })
 }
+
+
+const mainStatus = new MainStatus(89914, 5007, 56)
+listRewards()
+
+document.addEventListener('scroll', handleScroll);
+
+const backButton = document.getElementsByClassName("back__btn")[0]  // back project button
+backButton.addEventListener("click", () => { handleRewardsModal() })
+
+const bookmarkButton = document.getElementsByClassName("bookmark__btn")[0]  // bookmark switch
+bookmarkButton.addEventListener("click", () => { bookmarkProject(bookmarkButton) })
+
+const navbarButton = document.getElementsByClassName("navbar__btn")[0]  //  hamburger button
+navbarButton.addEventListener("click", () => { handleMenu() })
+
+const modalRewardCard = document.getElementsByClassName("modal__stands")[0].children[0]
+addClickEventToCard(modalRewardCard)

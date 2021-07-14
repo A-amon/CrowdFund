@@ -4,10 +4,6 @@ html, body {
   padding: 0;
 }
 
-body {
-  background-color: #fafafa;
-}
-
 h1, h2 {
   margin-top: 1rem;
 }
@@ -66,37 +62,8 @@ ul {
   margin: auto;
 }
 
-@media screen and (max-width: 768px) {
-  .navbar__inner {
-    max-width: 90%;
-  }
-}
-
 .navbar__btn {
   display: none;
-}
-
-@media screen and (max-width: 768px) {
-  .navbar__btn {
-    display: block;
-    margin-left: auto;
-  }
-}
-
-.navbar__btn[data-open="true"] img[alt="Close menu"] {
-  display: block;
-}
-
-.navbar__btn[data-open="true"] img[alt="Open menu"] {
-  display: none;
-}
-
-.navbar__btn[data-open="false"] img[alt="Close menu"] {
-  display: none;
-}
-
-.navbar__btn[data-open="false"] img[alt="Open menu"] {
-  display: block;
 }
 
 .navbar__links {
@@ -111,9 +78,38 @@ ul {
           flex: 1;
 }
 
+.navbar__link {
+  margin: 0 1rem;
+}
+
 @media screen and (max-width: 768px) {
-  .navbar__links {
+  .navbar__inner {
+    max-width: 90%;
+  }
+  .navbar__btn {
+    display: block;
+    margin-left: auto;
+  }
+  .navbar__btn[aria-expanded="true"] + .navbar__links {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-animation: fadeIn 0.5s 1 forwards;
+            animation: fadeIn 0.5s 1 forwards;
+  }
+  .navbar__btn[aria-expanded="true"] img[alt="Close menu"] {
+    display: block;
+  }
+  .navbar__btn[aria-expanded="true"] img[alt="Open menu"] {
     display: none;
+  }
+  .navbar__btn[aria-expanded="false"] img[alt="Close menu"] {
+    display: none;
+  }
+  .navbar__btn[aria-expanded="false"] img[alt="Open menu"] {
+    display: block;
+  }
+  .navbar__links {
     width: 90%;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
@@ -127,19 +123,9 @@ ul {
     background: white;
     color: black;
     border-radius: 10px;
+    -webkit-animation: fadeOut 0.5s 1 forwards;
+            animation: fadeOut 0.5s 1 forwards;
   }
-  .navbar__links.active {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-  }
-}
-
-.navbar__link {
-  margin: 0 1rem;
-}
-
-@media screen and (max-width: 768px) {
   .navbar__link {
     margin: 0;
     padding: 1.5rem;
@@ -148,6 +134,64 @@ ul {
   .navbar__link:not(:last-child) {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   }
+}
+
+@-webkit-keyframes fadeIn {
+  from {
+    -webkit-transform: translateY(-1rem);
+            transform: translateY(-1rem);
+    opacity: 0;
+  }
+  to {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    -webkit-transform: translateY(-1rem);
+            transform: translateY(-1rem);
+    opacity: 0;
+  }
+  to {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeOut {
+  from {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    -webkit-transform: translateY(-1rem);
+            transform: translateY(-1rem);
+    opacity: 0;
+    display: none;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    -webkit-transform: translateY(-1rem);
+            transform: translateY(-1rem);
+    opacity: 0;
+    display: none;
+  }
+}
+
+body {
+  background-color: #fafafa;
 }
 
 .top-space, .buttons__wrapper, .progress__bar {
@@ -173,12 +217,6 @@ ul {
   pointer-events: none;
 }
 
-@media screen and (max-width: 768px) {
-  .card {
-    padding: 25px 25px;
-  }
-}
-
 .card__header, .card__footer {
   position: relative;
   display: -webkit-box;
@@ -190,6 +228,9 @@ ul {
 }
 
 @media screen and (max-width: 768px) {
+  .card {
+    padding: 25px 25px;
+  }
   .card__header, .card__footer {
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
@@ -205,7 +246,7 @@ ul {
 }
 
 .hero {
-  background-image: url("../../assets/images/image-hero-desktop.jpg");
+  background-image: url("/assets/images/image-hero-desktop.jpg");
   background-repeat: no-repeat;
   background-size: 100%;
   height: 300px;
@@ -224,7 +265,7 @@ ul {
 }
 
 p {
-  color: #a1a1a1;
+  color: #7a7a7a;
 }
 
 .main {
@@ -241,12 +282,6 @@ p {
           align-items: center;
   margin: auto;
   margin-top: -150px;
-}
-
-@media screen and (max-width: 768px) {
-  .main {
-    max-width: 80%;
-  }
 }
 
 .main.hide::after {
@@ -270,7 +305,7 @@ p {
   width: 80px;
   display: block;
   border-radius: 50%;
-  background: url("../../assets/images/logo-mastercraft.svg"), black;
+  background: url("/assets/images/logo-mastercraft.svg"), black;
   background-repeat: no-repeat;
   background-size: cover;
   position: absolute;
@@ -282,12 +317,6 @@ p {
 
 .main__stands .card__header span {
   margin-left: auto;
-}
-
-@media screen and (max-width: 768px) {
-  .main__stands .card__header span {
-    margin-left: initial;
-  }
 }
 
 .main__stands .card__footer button {
@@ -304,6 +333,12 @@ p {
 }
 
 @media screen and (max-width: 768px) {
+  .main {
+    max-width: 80%;
+  }
+  .main__stands .card__header span {
+    margin-left: initial;
+  }
   .main__stands .card__footer button {
     margin-left: initial;
     margin-top: 1rem;
@@ -355,7 +390,17 @@ p {
 }
 
 .status__wrapper .status__col:not(:first-child) {
-  border-left: 2px solid #f2f2f2;
+  border-left: 2px solid #fafafa;
+}
+
+.status__wrapper .status__col span {
+  color: #a6a6a6;
+}
+
+.status__wrapper .status__val {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
 }
 
 @media screen and (max-width: 768px) {
@@ -380,18 +425,8 @@ p {
     left: 0;
     right: 0;
     margin: auto;
-    border-bottom: 2px solid #f2f2f2;
+    border-bottom: 2px solid #fafafa;
   }
-}
-
-.status__wrapper .status__col span {
-  color: #a6a6a6;
-}
-
-.status__wrapper .status__val {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: 0.5rem;
 }
 
 .buttons__wrapper {
@@ -420,21 +455,14 @@ p {
 }
 
 .buttons__wrapper .bookmark__btn {
-  background-color: whitesmoke;
+  background-color: #fafafa;
   color: #9c9c9c;
+  border-radius: 50px;
+  position: relative;
 }
 
 .buttons__wrapper .bookmark__btn:hover {
-  background-color: whitesmoke;
-}
-
-@media screen and (max-width: 768px) {
-  .buttons__wrapper .bookmark__btn {
-    padding: 0;
-  }
-  .buttons__wrapper .bookmark__btn span {
-    display: none;
-  }
+  background-color: #fafafa;
 }
 
 .buttons__wrapper .bookmark__btn::before {
@@ -442,7 +470,7 @@ p {
   height: 3rem;
   width: 3rem;
   display: block;
-  background: url("../../assets/icons/icon-bookmark.svg");
+  background: url("/assets/icons/icon-bookmark.svg");
   background-position: center;
   position: absolute;
   top: 0;
@@ -453,29 +481,25 @@ p {
   transition: left 0.5s;
 }
 
-@media screen and (max-width: 768px) {
-  .buttons__wrapper .bookmark__btn::before {
-    left: unset !important;
-    right: 0;
-  }
-}
-
-.buttons__wrapper .switch input:not(:checked) + button.bookmark__btn {
-  border-top-left-radius: unset;
-  border-bottom-left-radius: unset;
-}
-
 .buttons__wrapper .switch input:not(:checked) + button.bookmark__btn::before {
   left: -1.5rem;
 }
 
-.buttons__wrapper .switch input:checked + button.bookmark__btn {
-  border-top-right-radius: unset;
-  border-bottom-right-radius: unset;
-}
-
 .buttons__wrapper .switch input:checked + button.bookmark__btn::before {
   left: calc(100% - 1.5rem);
+}
+
+@media screen and (max-width: 768px) {
+  .buttons__wrapper .bookmark__btn {
+    padding: 0;
+  }
+  .buttons__wrapper .bookmark__btn span {
+    display: none;
+  }
+  .buttons__wrapper .bookmark__btn::before {
+    left: unset !important;
+    right: 0;
+  }
 }
 
 .progress__bar {
@@ -577,66 +601,26 @@ p {
           align-items: center;
 }
 
-@media screen and (max-width: 768px) {
-  .rewards__modal .modal__title {
-    position: relative;
-  }
-}
-
 .rewards__modal .close__btn {
   position: absolute;
   top: 2rem;
   right: 2rem;
 }
 
-@media screen and (max-width: 768px) {
-  .rewards__modal .close__btn {
-    position: initial;
-    margin-left: auto;
-  }
-}
-
 .rewards__modal .card {
   position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .rewards__modal .card__header {
-    max-width: -webkit-fit-content;
-    max-width: -moz-fit-content;
-    max-width: fit-content;
-    margin-left: 2rem;
-  }
 }
 
 .rewards__modal .card__header span {
   margin-left: 1rem;
 }
 
-@media screen and (max-width: 768px) {
-  .rewards__modal .card__header span {
-    margin-left: initial;
-  }
-}
-
 .rewards__modal .card__header .amount__left {
   margin-left: auto;
 }
 
-@media screen and (max-width: 768px) {
-  .rewards__modal .card__header .amount__left {
-    display: none;
-  }
-}
-
 .rewards__modal .card__footer .amount__left {
   display: none;
-}
-
-@media screen and (max-width: 768px) {
-  .rewards__modal .card__footer .amount__left {
-    display: initial;
-  }
 }
 
 .rewards__modal input.reward__radio {
@@ -674,12 +658,6 @@ p {
   padding: 1.5rem 0.5rem;
 }
 
-@media screen and (max-width: 768px) {
-  .rewards__modal .pledge__wrapper {
-    min-width: 100%;
-  }
-}
-
 .rewards__modal .pledge__error {
   display: block;
   font-size: 0.9rem;
@@ -693,18 +671,6 @@ p {
 
 .rewards__modal .pledge__amount:focus {
   outline: none;
-}
-
-@media screen and (max-width: 768px) {
-  .rewards__modal .pledge__amount {
-    width: 100%;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .rewards__modal .pledge__error, .rewards__modal .pledge__amount {
-    text-align: center;
-  }
 }
 
 .rewards__modal .pledge__min {
@@ -725,12 +691,6 @@ p {
   color: #bdbdbd;
 }
 
-@media screen and (max-width: 768px) {
-  .rewards__modal .pledge__min {
-    margin: 0;
-  }
-}
-
 .rewards__modal .pledge__submit {
   border-radius: 50px;
   color: white;
@@ -744,6 +704,40 @@ p {
 }
 
 @media screen and (max-width: 768px) {
+  .rewards__modal .modal__title {
+    position: relative;
+  }
+  .rewards__modal .close__btn {
+    position: initial;
+    margin-left: auto;
+  }
+  .rewards__modal .card__header {
+    max-width: -webkit-fit-content;
+    max-width: -moz-fit-content;
+    max-width: fit-content;
+    margin-left: 2rem;
+  }
+  .rewards__modal .card__header span {
+    margin-left: initial;
+  }
+  .rewards__modal .card__header .amount__left {
+    display: none;
+  }
+  .rewards__modal .card__footer .amount__left {
+    display: initial;
+  }
+  .rewards__modal .pledge__wrapper {
+    min-width: 100%;
+  }
+  .rewards__modal .pledge__amount {
+    width: 100%;
+  }
+  .rewards__modal .pledge__error, .rewards__modal .pledge__amount {
+    text-align: center;
+  }
+  .rewards__modal .pledge__min {
+    margin: 0;
+  }
   .rewards__modal .pledge__min, .rewards__modal .pledge__submit {
     -webkit-box-flex: 1;
         -ms-flex: 1;

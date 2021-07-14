@@ -1,12 +1,4 @@
-@import './global.scss';
-
-$light-gray:hsl(173, 31%, 73%);
-
-$light-gray-2:hsl(0, 0%, 74%);
-
-$light-gray-3: rgba(0,0,0,0.05);
-
-$gray: hsl(0, 0%, 63%);
+@import './_global';
 
 .top-space{
     margin-top:25px;   
@@ -31,15 +23,16 @@ $gray: hsl(0, 0%, 63%);
         pointer-events: none;
     }
 
-    @include mobile-query{
-        padding:25px 25px;
-    }
-
     &__header, &__footer{
         position: relative;
         display: flex;
         align-items: center;
-        @include mobile-query{
+    }
+
+    @include mobile-query{
+        padding:25px 25px;
+
+        &__header, &__footer{
             flex-direction: column;
             align-items: flex-start;
             justify-content: center;
@@ -48,7 +41,7 @@ $gray: hsl(0, 0%, 63%);
 }
 
 .hero{
-    background-image:url('../assets/images/image-hero-desktop.jpg');
+    background-image:url('/assets/images/image-hero-desktop.jpg');
     background-repeat: no-repeat;
     background-size:100%;
     height:300px;
@@ -69,7 +62,7 @@ $main-mobile-width:80%;
 }
 
 p{
-    color:$gray;
+    color:$boulder;
 }
 
 .main{    
@@ -79,10 +72,6 @@ p{
     align-items: center;
     margin:auto;
     margin-top:-150px;
-
-    @include mobile-query{
-        max-width:$main-mobile-width;
-    }
 
     &.hide::after{
         content:'';
@@ -104,7 +93,7 @@ p{
             width: 80px;
             display: block;
             border-radius:50%;
-            background:url('../assets/images/logo-mastercraft.svg'),black;
+            background:url('/assets/images/logo-mastercraft.svg'),black;
             background-repeat: no-repeat;
             background-size: cover;
             position:absolute;
@@ -118,17 +107,23 @@ p{
     &__stands .card{
         &__header span{
             margin-left: auto;
-
-            @include mobile-query{
-                margin-left: initial;
-            }
         }
 
         &__footer button{
             @include pill-button;
             margin-left: auto;
+        }
+    }
 
-            @include mobile-query{
+    @include mobile-query{
+        max-width:$main-mobile-width;
+
+        &__stands .card{
+            &__header span{
+                margin-left: initial;
+            }
+
+            &__footer button{
                 margin-left:initial;
                 margin-top:1rem;
             }
@@ -140,10 +135,10 @@ p{
     .card{
         width: initial;
         box-shadow: none;
-        border:1px solid $light-gray-3;
+        border:1px solid $black;
     }
     span{
-        color: $light-gray;
+        color: $jungle-mist;
     }
 }
 
@@ -167,14 +162,24 @@ p{
     .status__col{
         padding:0 1rem;
         flex:1;
-
-        $border-color: hsl(0, 0%, 95%);
     
         &:not(:first-child){
-            border-left: 2px solid $border-color;
+            border-left: 2px solid $alabaster;
         }
+        
+        span{
+            color:hsl(0, 0%, 65%);
+        }
+    }
 
-        @include mobile-query{
+    .status__val{
+        font-size:$large-font;
+        display: block;
+        margin-bottom:0.5rem;
+    }
+
+    @include mobile-query{
+        .status__col{
             flex:initial;
             padding:1rem;
             width: 100%;
@@ -194,19 +199,9 @@ p{
                 left:0;
                 right:0;
                 margin:auto;
-                border-bottom:2px solid $border-color;
+                border-bottom:2px solid $alabaster;
             }
         }
-        
-        span{
-            color:hsl(0, 0%, 65%);
-        }
-    }
-
-    .status__val{
-        font-size:$large-font;
-        display: block;
-        margin-bottom:0.5rem;
     }
 }
 
@@ -224,60 +219,55 @@ p{
     }
 
     .bookmark__btn{
-        $bookmarkColor: hsl(0, 0%, 96%);
-        background-color: $bookmarkColor;
+        background-color: $alabaster;
         color: hsl(0, 0%, 61%);
+        border-radius: 50px;
+        position: relative;
+        
         &:hover{
-            background-color:$bookmarkColor;
+            background-color: $alabaster;
         }
 
-        @include mobile-query{
-            padding:0;
-            span{
-                display: none;
-            }
-        }
-    }
-
-    .bookmark__btn::before{
-        content:'';
-        height:3rem;
-        width: 3rem;
-        display: block;
-        background:url('../assets/icons/icon-bookmark.svg');
-        background-position: center;
-        position:absolute;
-        top:0;
-        bottom:0;
-        margin:auto;
-        border-radius:50%;
-        transition: left 0.5s;
-
-        @include mobile-query{
-            left:unset !important;
-            right:0;
+        &::before{
+            content:'';
+            height:3rem;
+            width: 3rem;
+            display: block;
+            background:url('/assets/icons/icon-bookmark.svg');
+            background-position: center;
+            position:absolute;
+            top:0;
+            bottom:0;
+            margin:auto;
+            border-radius:50%;
+            transition: left 0.5s;
         }
     }
 
     .switch input:not(:checked) +{
-        button.bookmark__btn{
-            border-top-left-radius: unset;
-            border-bottom-left-radius: unset;
-        }
-
         button.bookmark__btn::before{
             left:-1.5rem;
         }
     }
 
     .switch input:checked +{
-        button.bookmark__btn{
-            border-top-right-radius: unset;
-            border-bottom-right-radius: unset;
-        }
-
         button.bookmark__btn::before{
             left:calc(100% - 1.5rem);
+        }
+    }
+
+    @include mobile-query{
+        .bookmark__btn{
+            padding:0;
+            
+            span{
+                display: none;
+            }
+
+            &::before{
+                left:unset !important;
+                right:0;
+            }
         }
     }
 }
@@ -359,55 +349,28 @@ p{
     .modal__title{
         display: flex;
         align-items: center;
-
-        @include mobile-query{
-            position: relative;
-        }
     }
 
     .close__btn{
         position:absolute;
         top:2rem;
         right:2rem;
-
-        @include mobile-query{
-            position: initial;
-            margin-left: auto;
-        }
     }
     
     .card{
         position: relative;
     }
 
-    .card__header{
-        @include mobile-query{
-            max-width: fit-content;
-            margin-left:2rem;
-        }
-    }
-
     .card__header span{
         margin-left:1rem;
-        @include mobile-query{
-            margin-left: initial;
-        }
     }
 
     .card__header .amount__left{
         margin-left: auto;
-
-        @include mobile-query{
-            display: none;
-        }
     }
 
     .card__footer .amount__left{
         display: none;
-
-        @include mobile-query{
-            display: initial;
-        }
     }
 
     input.reward__radio{
@@ -428,23 +391,11 @@ p{
         align-items: center;
         flex-wrap:wrap;
         margin-top:1rem;
-        border-top:1px solid $light-gray-3;
-        // &::before{
-        //     content:'';
-        //     width:100%;
-        //     position: absolute;
-        //     left:0;
-        //     bottom:calc(100px + 2rem);
-        //     display: block;
-        //     border-top:1px solid $light-gray-3;
-        // }
+        border-top:1px solid $black;
 
         &__wrapper{
             flex:1;
             padding:1.5rem 0.5rem;
-            @include mobile-query{
-                min-width: 100%;
-            }
         }
 
         &__error{
@@ -459,22 +410,12 @@ p{
             &:focus{
                 outline:none;
             }
-
-            @include mobile-query{
-                width: 100%;
-            }
-        }
-
-        &__error, &__amount{
-            @include mobile-query{
-                text-align: center;
-            }
         }
 
         &__min{
             color:black;
             font-weight: bold;
-            border:1px solid $light-gray-3;
+            border:1px solid $black;
             border-radius:50px;
             padding:0.5rem 2rem;
             position: relative;
@@ -485,20 +426,62 @@ p{
                 content:'$';
                 position:absolute;
                 left:20%;
-                color:$light-gray-2;
-            }
-
-            @include mobile-query{
-                margin:0;
+                color:$silver;
             }
         }
 
         &__submit{
             @include pill-button;
         }
+    }
 
-        &__min, &__submit{
-            @include mobile-query{
+    @include mobile-query{
+        .modal__title{
+            position: relative;
+        }
+
+        .close__btn{
+            position: initial;
+            margin-left: auto;
+        }
+
+        .card__header{
+            max-width: fit-content;
+            margin-left:2rem;
+
+            span{
+                margin-left: initial;
+            }
+
+            .amount__left{
+                display: none;
+            }
+        }
+
+        .card__footer{
+            .amount__left{
+                display: initial;
+            }
+        }
+
+        .pledge{
+            &__wrapper{
+                min-width: 100%;
+            }
+
+            &__amount{
+                width: 100%;
+            }
+
+            &__error, &__amount{
+                text-align: center;
+            }
+
+            &__min{
+                margin:0;
+            }
+
+            &__min, &__submit{
                 flex:1;
             }
         }

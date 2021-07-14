@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./styles/css/index.css">
-    <script src="./js/index.js"></script>
+    <link rel="stylesheet" href="styles/css/index.css">
     <title>CrowdFund</title>
 </head>
 
@@ -14,11 +13,11 @@
     <nav class="navbar">
         <div class="navbar__inner">
             <a href="#" class="navbar__brand">
-                <img src="./assets/images/logo.svg" alt="Crowdfund logo">
+                <img src="assets/images/logo.svg" alt="Crowdfund logo">
             </a>
-            <button class="navbar__btn" data-open="false">
-                <img src="./assets/icons/icon-close-menu.svg" alt="Close menu">
-                <img src="./assets/icons/icon-hamburger.svg" alt="Open menu">
+            <button class="navbar__btn" aria-expanded="false">
+                <img src="assets/icons/icon-close-menu.svg" alt="Close menu">
+                <img src="assets/icons/icon-hamburger.svg" alt="Open menu">
             </button>
             <ul class="navbar__links">
                 <li class="navbar__link">
@@ -101,7 +100,7 @@
     </div>
     <div class="modal complete__modal">
         <div class="card modal__body">
-            <img src="./assets/icons/icon-check.svg" alt="Completed">
+            <img src="assets/icons/icon-check.svg" alt="Completed">
             <h1>Thanks for your support</h1>
             <p>
                 Your pledge brings us one step closer to sharing Mastercraft Bamboo Monitor Riser worldwide.
@@ -118,14 +117,14 @@
             <div class="modal__title">
                 <h1>Back this project</h1>
                 <button class="close__btn">
-                    <img src="./assets/icons/icon-close-modal.svg" alt="Close modal">
+                    <img src="assets/icons/icon-close-modal.svg" alt="Close modal">
                 </button>
             </div>
             <p>Want to support us in bring <span>Mastercraft Bamboo Monitor Riser</span> out in the world?</p>
             <ul class="modal__stands">
                 <li class="card" data-id="0">
                     <div class="card__header">
-                        <input type="radio" class="reward__radio" aria-label="Select reward">
+                        <input type="radio" class="reward__radio" name="reward" aria-label="Select reward">
                         <h3>Pledge with no reward</h3>
                     </div>
                     <p>
@@ -134,7 +133,8 @@
                     </p>
                     <div class="pledge">
                         <div class="pledge__wrapper">
-                            <input class="pledge__amount" type="number" placeholder="Enter your pledge" aria-label="Enter pledge amount">
+                            <input class="pledge__amount" type="number" placeholder="Enter your pledge"
+                                aria-label="Enter pledge amount">
                             <span class="pledge__error"></span>
                         </div>
                         <button class="pledge__submit">Continue</button>
@@ -145,6 +145,62 @@
         <div class="modal__backdrop">
         </div>
     </div>
+
+    <template id="card--pledge">
+        <li class="card">
+            <div class="card__header">
+                <input type="radio" class="reward__radio" name="reward" aria-label="Select reward">
+                <h3>$name</h3>
+                <span>Pledge $$min or more</span>
+                <span class="amount__left">
+                    <strong>$amount</strong>
+                    <span>left</span>
+                </span>
+            </div>
+            <p>
+                $description
+            </p>
+            <div class="card__footer">
+                <span class="amount__left">
+                    <strong>$amount</strong>
+                    <span>left</span>
+                </span>
+            </div>
+            <div class="pledge">
+                <div class="pledge__wrapper">
+                    <input class="pledge__amount" type="number" placeholder="Enter your pledge"
+                        aria-label="Enter pledge amount">
+                    <span class=" pledge__error"></span>
+                </div>
+                <span class="pledge__min">$min</span>
+                <button class="pledge__submit">Continue</button>
+            </div>
+        </li>
+    </template>
+
+    <template id="card--reward">
+        <li class="card">
+            <div class="card__header">
+                <h3>$name</h3>
+                <span>Pledge $$min or more</span>
+            </div>
+            <p>
+                $description
+            </p>
+            <div class="card__footer">
+                <span class="amount__left">
+                    <strong>$amount</strong>
+                    <span>left</span>
+                </span>
+                <button class="reward__btn">
+                    Select Reward
+                </button>
+            </div>
+        </li>
+    </template>
+
+    <script src="js/MainStatus.js"></script>
+    <script src="js/index.js"></script>
 </body>
 
 </html>
