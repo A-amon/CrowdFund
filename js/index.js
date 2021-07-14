@@ -84,30 +84,37 @@ function pledge (card, reward) {
 
     let errorMessage = null
 
-    if (reward === null || pledgeAmount >= reward.min) {
-
-        //  if selected pledge with reward
-        if (reward !== null) {
-            updateRewardsAmount(reward.id)
-        }
-
-        mainStatus.backersCount++
-        mainStatus.backedAmount += pledgeAmount
-
-        rewardsModal.close()
-        completedModal.close()
-    }
-    else if (pledgeAmount === 0) {
+    if (pledgeAmount === 0 || isNaN(pledgeAmount)) {
         errorMessage = "Pledge amount must not be empty"
     }
-    else if (pledgeAmount < reward.min) {
-        errorMessage = `Min pledge for this reward is ${reward.min}`
+    else {
+        let canUpdate = false   //  true if pledgeAmount is enough and reward !== NULL
+
+        //  if selected pledge option with reward
+        if (reward !== null) {
+            if (pledgeAmount >= reward.min) {
+                updateRewardsAmount(reward.id)
+                canUpdate = true
+            }
+            else if (pledgeAmount < reward.min) {
+                errorMessage = `Min pledge for this reward is ${reward.min}`
+            }
+        }
+        if (reward === null || canUpdate) {
+            mainStatus.backersCount++
+            mainStatus.backedAmount += pledgeAmount
+
+            rewardsModal.close()
+            completedModal.close()
+        }
+
     }
 
-    setPledgeErrorMessage(errorMessage)
+    setPledgeErrorMessage(card, errorMessage)
 }
 
 //  update reward object's amount value
+//  decrement amount
 function updateRewardsAmount (id) {
     const rewardInd = rewards.findIndex(__reward => __reward.id === id)
     rewards[rewardInd].amount--
@@ -115,8 +122,8 @@ function updateRewardsAmount (id) {
 }
 
 //  set pledge error message to be displayed
-function setPledgeErrorMessage (message) {
-    const pledgeErrorMessage = document.getElementsByClassName("pledge__error")[0]
+function setPledgeErrorMessage (card, message) {
+    const pledgeErrorMessage = card.querySelector(".pledge__error")
     pledgeErrorMessage.textContent = message
 }
 
