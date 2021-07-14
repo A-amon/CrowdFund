@@ -1,5 +1,4 @@
-var selectedReward = null
-var isBookmarked = false
+var mainStatus
 
 const rewards = [
     {
@@ -27,6 +26,9 @@ const rewards = [
 
 const pledgeTemplate = document.getElementById("card--pledge")
 const rewardTemplate = document.getElementById("card--reward")
+
+const rewardsModal = new Modal("rewards__modal")
+const completedModal = new Modal("complete__modal")
 
 //  handle scroll event
 //  give navbar background color when scrolled
@@ -56,97 +58,44 @@ function bookmarkProject (bookmarkButton) {
     const isChecked = bookmarkCheckbox.checked
 
     bookmarkCheckbox.checked = !isChecked
-    isBookmarked = !isChecked
 
-    bookmarkButton.innerHTML = `<span>Bookmark${isBookmarked ? 'ed' : ''}</span>`
+    bookmarkButton.innerHTML = `<span>Bookmark${!isChecked ? 'ed' : ''}</span>`
 }
 
-//  handle completed process modal
-function handleCompleteModal () {
-    const completeModal = document.getElementsByClassName("complete__modal")[0]
-
-    handleModal(completeModal)
-}
-
-//  show/close modal
-function handleModal (modal) {
-    modal.classList.toggle('active')
-
-    if (modal.classList.contains('active')) {
-        const modalBackdrop = modal.querySelector(".modal__backdrop")
-        modalBackdrop.addEventListener("click", () => handleModal(modal))    // close on backdrop clicked
-
-        const modalCloseBtn = modal.querySelector(".close__btn")
-        modalCloseBtn.addEventListener("click", () => handleModal(modal))    // close on close button clicked
-    }
-}
-
-//  handle rewards modal
-function handleRewardsModal () {
-    const rewardsModal = document.getElementsByClassName("rewards__modal")[0]
-
-    handleModal(rewardsModal)
-}
-
-//  unselect previously selected reward
-function unselectPrevReward () {
-    if (selectedReward !== null) {  //  cannot unselect if no alternative reward selected
-        selectedCard.classList.remove('selected')
-    }
-}
-
-
-function selectReward (__selectedCard, isModal = true) {
-    unselectPrevReward()
-
-    const selectedId = parseInt(__selectedCard.getAttribute("data-id"))
-
-    let selectedRadio
-    if (isModal) {
-        selectedRadio = __selectedCard.querySelector("[type='radio']")
-        __selectedCard.classList.add("selected")
-        selectedCard = __selectedCard
-    }
-    else {
-        const rewardCard = getCardInModal(selectedId)
-        selectedRadio = getRadioInModal(rewardCard)
-        rewardCard.classList.add("selected")
-        selectedCard = rewardCard
+//  select reward
+//  check selected reward radiobutton
+function selectReward (selectedId) {
+    const prevSelectedCard = document.querySelector(".selected")
+    if (prevSelectedCard) {
+        prevSelectedCard.classList.remove('selected')
     }
 
-    selectedReward = parseInt(selectedId)
+    const selectedCard = rewardsModal.element.querySelector(`[data-id="${selectedId}"]`)
+
+    const selectedRadio = selectedCard.querySelector("[type='radio']")
     selectedRadio.checked = true
+
+    selectedCard.classList.add("selected")
 }
 
-function getCardInModal (selectedId) {
-    const rewardsModal = document.getElementsByClassName("rewards__modal")[0]
-    const rewardCard = rewardsModal.querySelector(`[data-id='${selectedId}']`)
-
-    return rewardCard
-}
-
-function getRadioInModal (rewardCard) {
-    const radio = rewardCard.querySelector("[type='radio']")
-
-    return radio
-}
-
-function pledge (reward) {
-    const pledgeAmount = parseInt(document.getElementsByClassName("pledge__amount")[reward.id === null ? 0 : reward.id].value)
+//  handle pledge submission
+function pledge (card, reward) {
+    const pledgeAmount = parseInt(card.querySelector(".pledge__amount").value)
 
     let errorMessage = null
 
     if (reward === null || pledgeAmount >= reward.min) {
+
+        //  if selected pledge with reward
         if (reward !== null) {
-            const rewardInd = rewards.findIndex(__reward => __reward.id === reward.id)
-            rewards[rewardInd].amount--
-            updateAmountShown(reward.amount)
+            updateRewardsAmount(reward.id)
         }
+
         mainStatus.backersCount++
         mainStatus.backedAmount += pledgeAmount
 
-        handleRewardsModal()
-        handleCompleteModal()
+        rewardsModal.close()
+        completedModal.close()
     }
     else if (pledgeAmount === 0) {
         errorMessage = "Pledge amount must not be empty"
@@ -158,6 +107,13 @@ function pledge (reward) {
     setPledgeErrorMessage(errorMessage)
 }
 
+//  update reward object's amount value
+function updateRewardsAmount (id) {
+    const rewardInd = rewards.findIndex(__reward => __reward.id === id)
+    rewards[rewardInd].amount--
+    updateAmountShown(id, rewards[rewardInd].amount)
+}
+
 //  set pledge error message to be displayed
 function setPledgeErrorMessage (message) {
     const pledgeErrorMessage = document.getElementsByClassName("pledge__error")[0]
@@ -165,8 +121,8 @@ function setPledgeErrorMessage (message) {
 }
 
 //  update amount left in selected reward card
-function updateAmountShown (amount) {
-    const rewardCards = document.querySelectorAll(`[data-id='${selectedReward}']`)
+function updateAmountShown (id, amount) {
+    const rewardCards = document.querySelectorAll(`[data-id='${id}']`)
     rewardCards.forEach(rewardCard => {
         const rewardAmount = rewardCard.querySelectorAll(".amount__left")
         rewardAmount.forEach(__rewardAmount => {
@@ -191,8 +147,8 @@ function addToMain (reward) {
 
     const rewardButton = rewardCard.querySelector(".reward__btn")
     rewardButton.addEventListener("click", () => {
-        selectReward(rewardCard, false)
-        handleRewardsModal()
+        selectReward(reward.id)
+        rewardsModal.open()
     })
 
     mainStands.appendChild(rewardCard)
@@ -200,10 +156,10 @@ function addToMain (reward) {
 
 //  add reward to rewards modal
 function addToRewardsModal (reward) {
-    const modalStands = document.getElementsByClassName("modal__stands")[0]
+    const modalStands = rewardsModal.element.querySelector(".modal__stands")
     let rewardCard = cloneTemplate(pledgeTemplate, reward)
 
-    addClickEventToCard(rewardCard, reward)
+    addEventToCard(rewardCard, reward)
 
     modalStands.appendChild(rewardCard)
 }
@@ -232,29 +188,37 @@ function cloneTemplate (template, { id, name, description, min, amount }) {
 }
 
 //  add click event handler to card
-function addClickEventToCard (card, reward = null) {
-    card.addEventListener("click", (event) => {
-        if (event.target.className === "pledge__submit")
-            pledge(reward)
-        else
-            selectReward(card)
+function addEventToCard (card, reward = null) {
+    card.addEventListener("click", event => {
+        const rewardId = reward === null ? 0 : reward.id
+        selectReward(rewardId)
+    })
+
+    const pledgeButton = card.querySelector(".pledge__submit")
+    pledgeButton.addEventListener("click", event => {
+        pledge(card, reward)
     })
 }
 
+function init () {
+    mainStatus = new MainStatus(89914, 5007, 56)
+    listRewards()
 
-const mainStatus = new MainStatus(89914, 5007, 56)
-listRewards()
+    document.addEventListener('scroll', handleScroll);
 
-document.addEventListener('scroll', handleScroll);
+    const backButton = document.getElementsByClassName("back__btn")[0]  // back project button
+    backButton.addEventListener("click", () => { rewardsModal.open() })
 
-const backButton = document.getElementsByClassName("back__btn")[0]  // back project button
-backButton.addEventListener("click", () => { handleRewardsModal() })
+    const bookmarkButton = document.getElementsByClassName("bookmark__btn")[0]  // bookmark switch
+    bookmarkButton.addEventListener("click", () => { bookmarkProject(bookmarkButton) })
 
-const bookmarkButton = document.getElementsByClassName("bookmark__btn")[0]  // bookmark switch
-bookmarkButton.addEventListener("click", () => { bookmarkProject(bookmarkButton) })
+    const navbarButton = document.getElementsByClassName("navbar__btn")[0]  //  hamburger button
+    navbarButton.addEventListener("click", () => { handleMenu() })
 
-const navbarButton = document.getElementsByClassName("navbar__btn")[0]  //  hamburger button
-navbarButton.addEventListener("click", () => { handleMenu() })
+    const modalRewardCard = document.getElementsByClassName("modal__stands")[0].children[0]
+    addEventToCard(modalRewardCard)
 
-const modalRewardCard = document.getElementsByClassName("modal__stands")[0].children[0]
-addClickEventToCard(modalRewardCard)
+    selectReward(0)
+}
+
+init()
